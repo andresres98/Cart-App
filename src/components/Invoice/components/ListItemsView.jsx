@@ -5,7 +5,6 @@ export const ListItemsView = ({title}) => {
   
   const {cartItems} = useCart();
   
-
     return (
         <>
             <h4>{title}</h4>
