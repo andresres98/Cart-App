@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
 import { calculateTotal } from "../services/productsServices";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 
 export const CartView = ({handlerDelete, items}) => {
 
   const [total, setTotal]= useState(0);
-
+  
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const savedItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setTotal(calculateTotal(savedItems));
+  }, []);
+
   useEffect(() =>{
+    setTotal(calculateTotal(items));
+  }, [items]);
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(items));
     setTotal(calculateTotal(items));
   }, [items]);
 
@@ -21,6 +32,24 @@ export const CartView = ({handlerDelete, items}) => {
     navigate('/catalog');
   }
 
+  const onCheckout = () => {
+    Swal.fire({
+      title: "Quieres finalizar la compra?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Finalizar Compra",
+      denyButtonText: `Seguir Comprando`,
+      cancelButtonText:`Revisar Carrito`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Compra finalizada", "", "success");
+        console.log('Productos comprados:', items);
+      } else if (result.isDenied) {
+        Swal.fire("No se finalizo la compra", "", "info");
+        navigate('/catalog');
+      }
+    });
+  }
 
   return (
     <>
@@ -58,7 +87,11 @@ export const CartView = ({handlerDelete, items}) => {
           </tr>
         </tfoot>
       </table>
-      <button className="btn btn-success" onClick={onCatalog}> Seguir comprando </button>
+      <div className="d-flex justify-content-between">
+        <button className="btn btn-success " onClick={onCatalog}> Seguir comprando </button>
+        <button className="btn btn-primary " onClick={onCheckout}> Finalizar Compra </button>
+      </div>
+      
     </>
   );
 }
