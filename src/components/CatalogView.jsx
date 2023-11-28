@@ -2,7 +2,9 @@ import {useEffect, useState} from 'react';
 import { getProducts } from '../services/productsServices';
 import { ProductCardView } from './ProductCardView';
 export const CatalogView = ({handler}) => {
+
     const [products, setProducts] = useState([]);
+    
     const [isLoading, setIsLoading] = useState(true);
 
     const findAll = async () => {

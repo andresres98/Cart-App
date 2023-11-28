@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { calculateTotal } from "../services/productsServices";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useCart } from "../context/CartContext";
 
+export const CartView = () => {
 
-export const CartView = ({handlerDelete, items}) => {
+  const {cartItems, deleteFromCart} = useCart();
 
   const [total, setTotal]= useState(0);
   
@@ -16,16 +18,19 @@ export const CartView = ({handlerDelete, items}) => {
   }, []);
 
   useEffect(() =>{
-    setTotal(calculateTotal(items));
-  }, [items]);
+    setTotal(calculateTotal(cartItems));
+  }, [cartItems]);
+
 
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(items));
-    setTotal(calculateTotal(items));
-  }, [items]);
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    setTotal(calculateTotal(cartItems));
+  }, [cartItems]);
+
+  
 
   const onDeleteProduct = (id)=>{
-    handlerDelete(id);
+    deleteFromCart(id);
   }
   
   const onCatalog = () => {
@@ -43,7 +48,8 @@ export const CartView = ({handlerDelete, items}) => {
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire("Compra finalizada", "", "success");
-        console.log('Productos comprados:', items);
+        console.log('Productos comprados:', cartItems);
+        navigate('/invoice');
       } else if (result.isDenied) {
         Swal.fire("No se finalizo la compra", "", "info");
         navigate('/catalog');
@@ -65,7 +71,7 @@ export const CartView = ({handlerDelete, items}) => {
           </tr>
         </thead>
         <tbody>
-          {items.map(item => (
+          {cartItems.map(item => (
               <tr key={item.product.id}>
                 <td>{item.product.name}</td>
                 <td>{item.product.price}</td>
@@ -76,7 +82,7 @@ export const CartView = ({handlerDelete, items}) => {
                 onClick={() => onDeleteProduct(item.product.id)}> Eliminar </button></td>
               </tr>
             ))}
-          
+            
         </tbody>
         <tfoot>
           <tr>
@@ -91,6 +97,7 @@ export const CartView = ({handlerDelete, items}) => {
         <button className="btn btn-success " onClick={onCatalog}> Seguir comprando </button>
         <button className="btn btn-primary " onClick={onCheckout}> Finalizar Compra </button>
       </div>
+      
       
     </>
   );

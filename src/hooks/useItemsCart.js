@@ -1,28 +1,28 @@
-import { useEffect, useReducer } from "react";
-import { itemsReducer } from "../reducer/itemsReducer";
+import { useEffect} from "react";
 import { AddProductCart, DeleteProductCart, UpdateQuantityProductCart } from "../reducer/itemsActions";
-
-const initialCartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+import { useCart } from "../context/CartContext";
 
 export const useItemsCart = () => {
-    const [cartItems, dispatch] = useReducer(itemsReducer, initialCartItems);
+    const {cartItems, addToCart: dispatchAddToCart, deleteFromCart: dispatchDeleteFromCart} = useCart();
 
     useEffect(() =>{
+      return () => {
         sessionStorage.setItem('cart', JSON.stringify(cartItems));
+      };
     }, [cartItems]);
 
     const handlerAddProductCart =(product)=> {
 
         const hasItem = cartItems.find((i)=> i.product.id === product.id);
         if(hasItem){
-            dispatch(
+            dispatchAddToCart(
               {
                 type: UpdateQuantityProductCart,
                 payload: product,
               }
             )
         } else {
-            dispatch(
+            dispatchAddToCart(
               {
                 type: AddProductCart,
                 payload: product,
@@ -31,7 +31,7 @@ export const useItemsCart = () => {
         }    
     }
     const handlerDeleteProductCart = (id) => {
-        dispatch(
+        dispatchDeleteFromCart(
           {
             type: DeleteProductCart,
             payload: id,
