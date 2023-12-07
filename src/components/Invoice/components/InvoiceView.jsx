@@ -1,16 +1,12 @@
-import PropTypes from 'prop-types';
-export const InvoiceView = ({id, name}) => {
+
+export const InvoiceView = ({id, company}) => {
     return (
         <>
             <ul className="list-group">
               <li className="list-group-item">Id: {id}</li>
-              <li className="list-group-item">Name: {name}</li>
+              <li className="list-group-item">Empresa: {company}</li>
             </ul>
         </>
     )
 }
 
-InvoiceView.propTypes = {
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-}

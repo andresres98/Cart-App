@@ -7,21 +7,44 @@ export const ClientModal = ({onSave}) =>  {
 
   const [show, setShow] = useState(false);
 
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+
   const [clientData, setClientData] = useState({
-    name: '',
-    lastName: '',
-    city: '',
-    address: '',
-    contact: '',
-    email: '',
+    nombre: '',
+    apellido: '',
+    contacto: '',
+    correo: '',
   });
 
-  const handleClose = () => setShow(false);
+  const [validationError, setValidationError] = useState({
+    nombre: '',
+    apellido: '',
+    contacto: '',
+    correo: '',
+  });
+
+  const handleClose = () => {
+    setShow(false);
+    setValidationError({
+      nombre: '',
+      apellido: '',
+      contacto: '',
+      correo: '',
+    });
+  };
 
   const handleShow = () => setShow(true);
 
   const handleSave = () => {
+    const validationErrors = validateFields();
+    setValidationError(validationErrors);
+    setIsFormSubmitted(true);
+
+    if(Object.values(validationErrors).some((error)=> error !== '')){
+      return; 
+    }
     onSave(clientData);
+    console.log(clientData);
     handleClose();
   };
 
@@ -31,7 +54,58 @@ export const ClientModal = ({onSave}) =>  {
       ...prevData,
       [name]: value,
     }));
+
+    if (name === 'contacto') {
+      const isValid = isValidContact(value);
+      setValidationError((prevErrors) => ({
+        ...prevErrors,
+        [name]: isValid ? '' : 'Contacto no es válido',
+      }));
+    }
   };
+
+  const validateFields = () => {
+    let errors = {
+      nombre: '',
+      apellido: '',
+      contacto: '',
+      correo: '',
+    };
+
+    if (!clientData.nombre.trim()) {
+      errors.nombre = 'Nombre es requerido';
+    }
+
+    if (!clientData.apellido.trim()) {
+      errors.apellido = 'Apellido es requerido';
+    }
+
+    if (!clientData.contacto.trim()) {
+      errors.contacto = 'Contacto es requerido';
+    } else if (!isValidContact(clientData.contacto)) {  
+      errors.contacto = 'Contacto no es válido';
+    }
+    
+    if (!clientData.correo.trim()) {
+      errors.correo = 'Correo es requerido';
+    } else if (!isValidEmail(clientData.correo)) {
+      errors.correo = 'Correo no es válido';
+    }
+
+    return errors;
+  };
+
+
+  const isValidContact = (contact) => {
+    const contactRegex = /^\d{10}$/;
+    return contactRegex.test(contact);
+  };
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
 
   return (
     <>
@@ -48,64 +122,63 @@ export const ClientModal = ({onSave}) =>  {
               <Form.Label>Nombre: </Form.Label>
               <Form.Control
                 type="text"
-                name="name"
+                name="nombre"
                 placeholder="Nombre de quien recibe el pedido"
                 autoFocus
                 onChange={handleChange}
+                isInvalid={isFormSubmitted && !!validationError.nombre}
               />
+              <Form.Control.Feedback type="invalid">
+                {validationError.nombre} 
+              </Form.Control.Feedback>
             </Form.Group>
+
+
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Apellido: </Form.Label>
               <Form.Control
                 type="text"
-                name="lastName"
+                name="apellido"
                 placeholder="Apellido de quien recibe el pedido"
                 autoFocus
                 onChange={handleChange}
+                isInvalid={isFormSubmitted && !!validationError.apellido}
               />
+              <Form.Control.Feedback type="invalid">
+                {validationError.apellido} 
+              </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Ciudad: </Form.Label>
-              <Form.Control
-                type="text"
-                name="city"
-                placeholder="Ciudad"
-                autoFocus
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>Direccion: </Form.Label>
-              <Form.Control
-                type="text"
-                name="address"
-                placeholder="Dirección completa"
-                autoFocus
-                onChange={handleChange}
-              />
-            </Form.Group>
+          
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Contacto: </Form.Label>
               <Form.Control
                 type="tel"
-                name="contact"
+                name="contacto"
                 placeholder="Número de contacto"
                 autoFocus
                 onChange={handleChange}
+                isInvalid={isFormSubmitted && !!validationError.contacto}
               />
+              <Form.Control.Feedback type="invalid">
+                {validationError.contacto}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Correo: </Form.Label>
               <Form.Control
                 type="email"
-                name="email"
+                name="correo"
                 placeholder="name@example.com"
                 autoFocus
                 onChange={handleChange}
+                isInvalid={isFormSubmitted && !!validationError.correo}
               />
+              <Form.Control.Feedback type="invalid">
+                {validationError.correo}
+              </Form.Control.Feedback>
             </Form.Group>
-            
+          
           </Form>
         </Modal.Body>
         <Modal.Footer>

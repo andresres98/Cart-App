@@ -24,8 +24,8 @@ export const TotalView = () => {
     }, [cartItems]);
     return (
         <>
-            <div className="text-end">
-                <span className="badge bg-success"> {total} </span>
+            <div className="text-center">
+                <span className="badge bg-success fs-6 p-3"> Total: <span> {total} </span> </span>
             </div>
         </>
     )
