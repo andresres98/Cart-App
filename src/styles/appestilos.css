@@ -1,0 +1,28 @@
+.pdf-hidden {
+  display: none;
+}
+
+.generating-pdf {
+  display: block;
+}
+.btn-link {
+  background-color: #e9afc9  !important;
+  color: #59352d  !important; 
+  border: 2px solid #59352d !important;
+  padding: 5px 10px !important;
+  margin-top: autt !important; 
+  text-decoration: none !important;
+  font-family: monospace !important;
+} 
+
+.custom-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  height: auto !important;
+  margin-right: 10px !important; /* Agrega un margen entre las tarjetas */
+  /*border: 2px solid #59352d;*/
+  background-color: rgba(250, 233, 240, 0.6) !important;
+  box-shadow: 0 0 10px rgba(89, 53, 45, 0.5) !important;
+  padding: 20px !important;
+}

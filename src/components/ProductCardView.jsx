@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import "../../src/styles/appestilos.css";
 
 export const ProductCardView = ({id, name, description, price}) => {
 
@@ -15,12 +16,12 @@ export const ProductCardView = ({id, name, description, price}) => {
 
   return (
     <>
-        <div className="card">
+        <div className="card custom-card">
             <div className="card-body">
                 <h5 className="card-title">{name}</h5>
                 <p className="card-text">{description}</p>
                 <p className="card-text">{price}</p>
-                <button className="btn btn-primary" 
+                <button className="btn btn-link" 
                   onClick={()=> onAddProduct({id, name, description, price})}>Agregar 
                 </button>
              </div>                    

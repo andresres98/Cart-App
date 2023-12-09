@@ -1,38 +1,38 @@
-import { useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
+import { useState } from "react";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+import "../../../styles/appestilos.css";
 
-export const ClientModal = ({onSave}) =>  {
-
+export const ClientModal = ({ onSave, isGeneratingPDF }) => {
   const [show, setShow] = useState(false);
 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const [clientData, setClientData] = useState({
-    nombre: '',
-    apellido: '',
-    contacto: '',
-    correo: '',
+    nombre: "",
+    apellido: "",
+    contacto: "",
+    correo: "",
   });
 
   const [validationError, setValidationError] = useState({
-    nombre: '',
-    apellido: '',
-    contacto: '',
-    correo: '',
+    nombre: "",
+    apellido: "",
+    contacto: "",
+    correo: "",
   });
 
   const handleClose = () => {
     setShow(false);
     setValidationError({
-      nombre: '',
-      apellido: '',
-      contacto: '',
-      correo: '',
+      nombre: "",
+      apellido: "",
+      contacto: "",
+      correo: "",
     });
   };
-
+  const button = document.querySelector("#client-modal-button");
   const handleShow = () => setShow(true);
 
   const handleSave = () => {
@@ -40,8 +40,8 @@ export const ClientModal = ({onSave}) =>  {
     setValidationError(validationErrors);
     setIsFormSubmitted(true);
 
-    if(Object.values(validationErrors).some((error)=> error !== '')){
-      return; 
+    if (Object.values(validationErrors).some((error) => error !== "")) {
+      return;
     }
     onSave(clientData);
     console.log(clientData);
@@ -55,46 +55,45 @@ export const ClientModal = ({onSave}) =>  {
       [name]: value,
     }));
 
-    if (name === 'contacto') {
+    if (name === "contacto") {
       const isValid = isValidContact(value);
       setValidationError((prevErrors) => ({
         ...prevErrors,
-        [name]: isValid ? '' : 'Contacto no es válido',
+        [name]: isValid ? "" : "Contacto no es válido",
       }));
     }
   };
 
   const validateFields = () => {
     let errors = {
-      nombre: '',
-      apellido: '',
-      contacto: '',
-      correo: '',
+      nombre: "",
+      apellido: "",
+      contacto: "",
+      correo: "",
     };
 
     if (!clientData.nombre.trim()) {
-      errors.nombre = 'Nombre es requerido';
+      errors.nombre = "Nombre es requerido";
     }
 
     if (!clientData.apellido.trim()) {
-      errors.apellido = 'Apellido es requerido';
+      errors.apellido = "Apellido es requerido";
     }
 
     if (!clientData.contacto.trim()) {
-      errors.contacto = 'Contacto es requerido';
-    } else if (!isValidContact(clientData.contacto)) {  
-      errors.contacto = 'Contacto no es válido';
+      errors.contacto = "Contacto es requerido";
+    } else if (!isValidContact(clientData.contacto)) {
+      errors.contacto = "Contacto no es válido";
     }
-    
+
     if (!clientData.correo.trim()) {
-      errors.correo = 'Correo es requerido';
+      errors.correo = "Correo es requerido";
     } else if (!isValidEmail(clientData.correo)) {
-      errors.correo = 'Correo no es válido';
+      errors.correo = "Correo no es válido";
     }
 
     return errors;
   };
-
 
   const isValidContact = (contact) => {
     const contactRegex = /^\d{10}$/;
@@ -106,12 +105,16 @@ export const ClientModal = ({onSave}) =>  {
     return emailRegex.test(email);
   };
 
-
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        Ingresa tus datos!!
-      </Button>
+      <div
+        className={`pdf-hidden-button ${isGeneratingPDF ? "pdf-hidden" : ""}`}
+        id="client-modal-button"
+      >
+        <Button variant="primary" onClick={handleShow}>
+          Ingresa tus datos!!
+        </Button>
+      </div>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Datos del cliente: </Modal.Title>
@@ -129,10 +132,9 @@ export const ClientModal = ({onSave}) =>  {
                 isInvalid={isFormSubmitted && !!validationError.nombre}
               />
               <Form.Control.Feedback type="invalid">
-                {validationError.nombre} 
+                {validationError.nombre}
               </Form.Control.Feedback>
             </Form.Group>
-
 
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Apellido: </Form.Label>
@@ -145,10 +147,10 @@ export const ClientModal = ({onSave}) =>  {
                 isInvalid={isFormSubmitted && !!validationError.apellido}
               />
               <Form.Control.Feedback type="invalid">
-                {validationError.apellido} 
+                {validationError.apellido}
               </Form.Control.Feedback>
             </Form.Group>
-          
+
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Contacto: </Form.Label>
               <Form.Control
@@ -178,7 +180,6 @@ export const ClientModal = ({onSave}) =>  {
                 {validationError.correo}
               </Form.Control.Feedback>
             </Form.Group>
-          
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -186,11 +187,10 @@ export const ClientModal = ({onSave}) =>  {
             Cerrar
           </Button>
           <Button variant="primary" onClick={handleSave}>
-            Guardar Información 
+            Guardar Información
           </Button>
         </Modal.Footer>
       </Modal>
     </>
   );
-}
-
+};

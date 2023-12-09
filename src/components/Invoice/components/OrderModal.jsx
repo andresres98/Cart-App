@@ -4,8 +4,9 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Swal from "sweetalert2";
+import "../../../styles/appestilos.css"; 
 
-export const OrderModal = ({onSave}) =>  {
+export const OrderModal = ({onSave, isGeneratingPDF}) =>  {
 
   const [show, setShow] = useState(false);
 
@@ -86,9 +87,13 @@ export const OrderModal = ({onSave}) =>  {
 
   return (
     <>
-      <Button variant="primary" className="pdf-hidden" onClick={handleShow}>
-        ¿Donde y cuando enviamos tu pedido?
+      <div id="order-modal-button"
+      className={`pdf-hidden-button ${isGeneratingPDF ? "pdf-hidden" : ""}`}>
+        <Button variant="primary" onClick={handleShow}>
+        ¿Dónde y cuándo enviamos tu pedido?
       </Button>
+      </div>
+      
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Datos del Pedido: </Modal.Title>
@@ -151,7 +156,7 @@ export const OrderModal = ({onSave}) =>  {
           <Button variant="secondary" onClick={handleClose}>
             Cerrar
           </Button>
-          <Button variant="primary" onClick={handleSave}>
+          <Button variant="primary"  onClick={handleSave}>
             Guardar Información 
           </Button>
         </Modal.Footer>

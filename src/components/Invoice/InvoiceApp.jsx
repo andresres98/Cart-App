@@ -12,7 +12,7 @@ import axios from 'axios';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import Swal from "sweetalert2";
-
+import "../../../src/styles/appestilos.css"
 
 export const InvoiceApp = () => {
   
@@ -23,6 +23,8 @@ export const InvoiceApp = () => {
   const {cartItems} = useCart(); 
 
   const [total, setTotal]= useState(0);
+
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
     
     useEffect(() => {
@@ -69,8 +71,7 @@ export const InvoiceApp = () => {
       .then((result) => {
         if (result.isConfirmed) {
           Swal.fire('¡Pedido finalizado!', '', 'success');
-          generateAndDownloadPDF();
-          handelFinishOrder(); 
+          generateAndDownloadPDF(); 
         } else {
           Swal.fire('Pedido cancelado.', '', 'info');
         }
@@ -114,54 +115,77 @@ export const InvoiceApp = () => {
 
   const generateAndDownloadPDF = async () => {
     const content = document.getElementById('invoice-content');
+    const buttonsToHide = document.querySelectorAll('#boton-finalizar-pedido, #client-modal-button, #order-modal-button');
+    console.log(buttonsToHide); 
   
     try {
+      setIsGeneratingPDF(true);
+  
+      for (let i = 0; i < buttonsToHide.length; i++) {
+        buttonsToHide[i].style.display = 'none';
+      }
+  
       const htmlContent = content.innerHTML;
-    const canvas = await html2canvas(content);
-
-
-    const pdf = new jsPDF({ format: 'a4', orientation: 'portrait', unit: 'mm', compressPdf: true });
-
-    pdf.text(htmlContent, 10, 10);
-
-
-    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 40, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight() - 40, '', 'FAST');
-
-    pdf.save('factura.pdf');
+      const canvas = await html2canvas(content);
+  
+      const pdf = new jsPDF({
+        format: 'a4',
+        orientation: 'portrait',
+        unit: 'mm',
+        compressPdf: true,
+      });
+  
+      pdf.text(htmlContent, 10, 10);
+  
+      pdf.addImage(
+        canvas.toDataURL('image/png'),
+        'PNG',
+        0,
+        40,
+        pdf.internal.pageSize.getWidth(),
+        pdf.internal.pageSize.getHeight() - 40,
+        '',
+        'FAST'
+      );
+  
+      pdf.save('factura.pdf');
     } catch (error) {
       console.error('Error al generar el PDF', error);
+    } finally {
+      setIsGeneratingPDF(false);
+  
+      for (let i = 0; i < buttonsToHide.length; i++) {
+        buttonsToHide[i].style.display = 'block';
+      }
     }
   };
 
-  const [isClientModalComplete, setIsClientModalComplete] = useState(false);
-
-  const [isOrderModalComplete, setIsOrderModalComplete] = useState(false);
 
   return (
     
     <>
     
-      <div className="container" id="invoice-content">
+      <div className={`container ${isGeneratingPDF ? 'generating-pdf' : ''}`} id="invoice-content">
         <div className="card my-3">
           <div className="card-header"><h2 className="fst-italic">Factura</h2></div>
           <div className="card-body" >
-            <InvoiceView id="#1214" company="Brownies y Galletas"/>
+            <InvoiceView isbn="65422986" company="Brownies y Galletas"/>
 
             <div className="row my-3">
               <div className="col">
 
                 <ClientView title="Datos del cliente:" client={client}  />
-                <ClientModal onSave={(clientData) => setClient(clientData)} />
+                <ClientModal onSave={(clientData) => setClient(clientData)} isGeneratingPDF={isGeneratingPDF}/>
 
               </div>
               <div className="col">
                 <OrderView title="Datos del pedido:" order={order}/>
-                <OrderModal onSave={(orderData) => setOrder(orderData)}/>
+                <OrderModal onSave={(orderData) => setOrder(orderData)} isGeneratingPDF={isGeneratingPDF}/>
               </div>
             </div>
               <ListItemsView title="Productos de la factura:"/>
               <TotalView total = "total"/>
-              <button type="submit" className="btn btn-danger pdf-hidden" id="boton-finalizar-pedido" onClick={handelFinishOrder}> Finalizar Pedido </button>
+              <button type="submit" className={`btn btn-danger ${isGeneratingPDF ? 'pdf-hidden' : ''}`} id="boton-finalizar-pedido" onClick={handelFinishOrder}> Finalizar Pedido </button>
           </div>
         </div>
       </div>
